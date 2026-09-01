@@ -1,0 +1,163 @@
+import 'dart:io';
+
+void main() {
+  List<Map<String, dynamic>> students = [];
+  bool running = true;
+
+  while (running) {
+    print("===============================================");
+    print("STUDENT INFORMATION SYSTEM");
+    print("===============================================");
+    print("1. Add Student");
+    print("2. View Student List");
+    print("3. Search Student");
+    print("4. Update Student Information");
+    print("5. Delete Student");
+    print("6. Exit");
+    stdout.write("Enter your choice: ");
+    String? choice = stdin.readLineSync();
+
+    switch (choice) {
+      case "1":
+        addStudent(students);
+        break;
+      case "2":
+        viewStudents(students);
+        break;
+      case "3":
+        searchStudent(students);
+        break;
+      case "4":
+        updateStudent(students);
+        break;
+      case "5":
+        deleteStudent(students);
+        break;
+      case "6":
+        running = false;
+        print("Exiting program. Thank you!");
+        break;
+      default:
+        print("Invalid choice. Please try again.");
+    }
+  }
+}
+
+
+int readInt(String prompt) {
+  while (true) {
+    stdout.write(prompt);
+    String? input = stdin.readLineSync();
+    int? value = int.tryParse(input?.trim() ?? "");
+    if (value != null) return value;
+    print("Invalid number. Please enter digits only (e.g. 3).");
+  }
+}
+ 
+
+int? readIntOptional(String prompt) {
+  while (true) {
+    stdout.write(prompt);
+    String? input = stdin.readLineSync();
+    if (input == null || input.trim().isEmpty) return null;
+
+    int? value = int.tryParse(input.trim());
+    if (value != null) return value;
+    print("Invalid number. Please enter digits only.");
+  }
+}
+
+void addStudent(List<Map<String, dynamic>> students) {
+  stdout.write("Enter Student ID: ");
+  String? id = stdin.readLineSync();
+
+  stdout.write("Enter Name: ");
+  String? name = stdin.readLineSync();
+
+  stdout.write("Enter Course: ");
+  String? course = stdin.readLineSync();
+
+  int year = readInt("Enter Year Level (numbers only, e.g. 3): ");
+
+  students.add({
+    "id": id,
+    "name": name,
+    "course": course,
+    "year": year,
+  });
+
+  print("Student added successfully!");
+}
+
+void viewStudents(List<Map<String, dynamic>> students) {
+  if (students.isEmpty) {
+    print("No students found.");
+    return;
+  }
+
+  print("\n---- STUDENT LIST ----");
+  for (var student in students) {
+    print("ID: ${student["id"]} | Name: ${student["name"]} | "
+        "Course: ${student["course"]} | Year: ${student["year"]}");
+  }
+}
+
+void searchStudent(List<Map<String, dynamic>> students) {
+  stdout.write("Enter Student ID to search: ");
+  String? id = stdin.readLineSync();
+
+  var match = students.where((s) => s["id"] == id).toList();
+
+  if (match.isEmpty) {
+    print("No student found with ID $id");
+    return;
+  }
+
+  var student = match.first;
+  print("Student Found:");
+  print("ID: ${student["id"]}");
+  print("Name: ${student["name"]}");
+  print("Course: ${student["course"]}");
+  print("Year: ${student["year"]}");
+}
+
+void updateStudent(List<Map<String, dynamic>> students) {
+  stdout.write("Enter Student ID to update: ");
+  String? id = stdin.readLineSync();
+
+  var match = students.where((s) => s["id"] == id).toList();
+
+  if (match.isEmpty) {
+    print("No student found with ID $id");
+    return;
+  }
+
+  var student = match.first;
+
+  stdout.write("Enter New Name (${student["name"]}): ");
+  String? name = stdin.readLineSync();
+  if (name != null && name.isNotEmpty) student["name"] = name;
+
+  stdout.write("Enter New Course (${student["course"]}): ");
+  String? course = stdin.readLineSync();
+  if (course != null && course.isNotEmpty) student["course"] = course;
+
+  int? year = readIntOptional("Enter New Year Level (${student["year"]}): ");
+  if (year != null) student["year"] = year;
+
+  print("Student information updated!");
+}
+
+void deleteStudent(List<Map<String, dynamic>> students) {
+  stdout.write("Enter Student ID to delete: ");
+  String? id = stdin.readLineSync();
+
+  var removed = students.any((s) => s["id"] == id);
+  students.removeWhere((s) => s["id"] == id);
+
+  if (removed) {
+    print("Student deleted successfully!");
+  } else {
+    print("No student found with ID $id");
+  }
+}
